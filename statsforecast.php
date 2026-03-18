@@ -34,9 +34,6 @@ class statsforecast extends Module
     private $t2 = 0;
     private $t3 = 0;
     private $t4 = 0;
-    private $t5 = 0;
-    private $t6 = 0;
-    private $t7 = 0;
     private $t8 = 0;
 
     public function __construct()
@@ -396,7 +393,6 @@ class statsforecast extends Module
 
         $from = strtotime($employee->stats_date_from . ' 00:00:00');
         $to = strtotime($employee->stats_date_to . ' 23:59:59');
-        $interval = ($to - $from) / 60 / 60 / 24;
 
         $this->html .= '
 			<div class="row row-margin-bottom">
@@ -746,7 +742,7 @@ class statsforecast extends Module
     }
 }
 
-function statsforecast_sort($a, $b)
+function statsforecast_sort(array $a, array $b)
 {
     if ($a['orderSum'] == $b['orderSum']) {
         return 0;
