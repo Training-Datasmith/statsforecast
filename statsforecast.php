@@ -53,6 +53,11 @@ class statsforecast extends Module
         $this->ps_versions_compliancy = ['min' => '1.7.6.0', 'max' => _PS_VERSION_];
     }
 
+    /**
+     * Install the module and register the stats dashboard hook.
+     *
+     * @return bool True on successful installation, false otherwise
+     */
     public function install()
     {
         return parent::install() && $this->registerHook('displayAdminStatsModules');
@@ -63,6 +68,13 @@ class statsforecast extends Module
         Tools::redirectAdmin($this->context->link->getAdminLink('AdminStats', true, [], ['module' => $this->name]));
     }
 
+    /**
+     * Render the sales forecast chart on the admin statistics dashboard.
+     *
+     * Presents a chart of past sales and a projected forward trend for the selected period.
+     *
+     * @return string HTML output for the statistics widget
+     */
     public function hookDisplayAdminStatsModules()
     {
         $ru = $this->context->link->getAdminLink('AdminStats', true, [], ['module' => $this->name]);
