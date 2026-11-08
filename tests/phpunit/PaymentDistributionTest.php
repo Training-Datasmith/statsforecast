@@ -26,7 +26,10 @@ class PaymentDistributionTest extends DatabaseCase
         Fixture::insertPayment('REF1', 'Bank wire', 10, 1, '2020-01-06 12:00:00');
         Fixture::insertPayment('REF1', 'Bank wire', 15, 1, '2020-01-06 13:00:00');
         $html = $this->runHook();
-        $this->assertContains('PRICE(EUR:25.00)', $html);
+        $pay = $this->sectionAfter($html, 'Payment distribution');
+        $this->assertRegExp('/Bank wire[\s\S]*?<td class="text-center">1<\/td>/', $pay);
+        $this->assertContains('PRICE(EUR:25.00)', $pay);
+        $this->assertNotContains('PRICE(EUR:12.50)', $pay);
     }
 
     public function testPaymentsOutsideTheEmployeeRangeAreExcluded()

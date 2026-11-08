@@ -21,7 +21,7 @@ class CategoryDistributionTest extends DatabaseCase
         Fixture::insertOrder(array(
             'invoice_date' => '2020-01-06 16:00:00',
             'date_add' => '2020-01-06 16:00:00',
-            'total_paid_tax_excl' => 30,
+            'total_paid_tax_excl' => 60,
             'conversion_rate' => 2,
             'lines' => array(array(
                 'product_id' => 2,
@@ -42,10 +42,21 @@ class CategoryDistributionTest extends DatabaseCase
         $cat = $this->sectionAfter($html, 'Category distribution');
         $this->assertContains('66.7%', $cat);
         $this->assertContains('33.3%', $cat);
-        $this->assertContains('120.0%', $cat);
-        $this->assertContains('40.0%', $cat);
+        $this->assertContains('75.0%', $cat);
+        $this->assertContains('25.0%', $cat);
         $this->assertNotContains('PRICE(EUR:99.00)', $cat);
         $this->assertNotContains('PRICE(EUR:60.00)', $cat);
+        $expectedLogAmounts = array(30.0, 10.0, 15.0, 10.0);
+        foreach ($expectedLogAmounts as $expected) {
+            $found = false;
+            foreach (Context::getContext()->getLocaleLog() as $entry) {
+                if (is_numeric($entry[0]) && abs((float) $entry[0] - $expected) < 0.001) {
+                    $found = true;
+                    break;
+                }
+            }
+            $this->assertTrue($found, 'expected formatPrice log amount ' . $expected);
+        }
     }
 
     public function testMissingCategoryNameIsShownAsUnknown()
@@ -67,8 +78,8 @@ class CategoryDistributionTest extends DatabaseCase
         $cat = $this->sectionAfter($html, 'Category distribution');
         $this->assertContains('66.7%', $cat);
         $this->assertContains('33.3%', $cat);
-        $this->assertContains('120.0%', $cat);
-        $this->assertContains('40.0%', $cat);
+        $this->assertContains('75.0%', $cat);
+        $this->assertContains('25.0%', $cat);
     }
 
     public function testZeroQuantityLineDoesNotWarnAndPrintsZeroPercent()

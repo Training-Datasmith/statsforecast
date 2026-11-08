@@ -51,7 +51,9 @@ class ConversionFunnelTest extends DatabaseCase
         Fixture::insertCart(array('products' => array(array()), 'date_add' => '2020-07-01 10:00:00', 'date_upd' => '2020-07-01 10:00:00'));
         Fixture::insertConnection('2020-08-10 10:00:00');
         $html = $this->runHook();
-        $this->assertContains('Conversion', $html);
+        $conv = $this->sectionAfter($html, 'Conversion');
+        $this->assertRegExp('/Full carts[\s\S]*?<p>1<\/p>/', $conv);
+        $this->assertRegExp('/Carts[\s\S]*?<p>2<\/p>/', $conv);
     }
 
     public function testZeroVisitorsDoNotWarnAndShowZeroPercents()

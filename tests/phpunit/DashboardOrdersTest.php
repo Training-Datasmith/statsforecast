@@ -108,12 +108,19 @@ class DashboardOrdersTest extends DatabaseCase
     public function testDayWithVisitsAndNoOrdersShowsDashesNotWarnings()
     {
         Fixture::seedCatalog();
-        Fixture::setEmployeeRange('2020-01-10', '2020-01-10');
+        Fixture::setEmployeeRange('2020-01-09', '2020-01-10');
         Fixture::insertConnection('2020-01-10 08:00:00');
         Fixture::insertConnection('2020-01-10 09:00:00');
         Fixture::insertConnection('2020-01-10 10:00:00');
         $html = $this->runHook();
-        $this->assertContains('>-<', $html);
+        $this->assertRegExp(
+            '/<td>2020-01-09<\/td>[\s\S]*?<td class="text-center">-<\/td>\s*<td class="text-center">-<\/td>/',
+            $html
+        );
+        $this->assertRegExp(
+            '/<td>2020-01-10<\/td>[\s\S]*?<td class="text-center">0 %<\/td>\s*<td class="text-center">0 %<\/td>/',
+            $html
+        );
     }
 
     public function testCreationDateOmitsEmptyDaysBeforeTheShopExisted()
