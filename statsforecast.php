@@ -481,7 +481,7 @@ class statsforecast extends Module
 							<td class="text-center">' . (empty($catrow['name']) ? $this->trans('Unknown', [], 'Admin.Shopparameters.Feature') : $catrow['name']) . '</td>
 							<td class="text-center">' . $catrow['orderQty'] . '</td>
 							<td class="text-right">' . $this->context->getCurrentLocale()->formatPrice($catrow['orderSum'], $currency->iso_code) . '</td>
-							<td class="text-center">' . number_format((100 * $catrow['orderQty'] / $this->t4), 1, '.', ' ') . '%</td>
+							<td class="text-center">' . ($this->t4 ? number_format((100 * $catrow['orderQty'] / $this->t4), 1, '.', ' ') : '0') . '%</td>
 							<td class="text-center">' . ((int) $ca['ventil']['total'] ? number_format((100 * $catrow['orderSum'] / $ca['ventil']['total']), 1, '.', ' ') : '0') . '%</td>
 							<td class="text-right">' . $this->context->getCurrentLocale()->formatPrice($catrow['priveAvg'], $currency->iso_code) . '</td>
 						</tr>';
@@ -688,8 +688,8 @@ class statsforecast extends Module
             $sql = 'SELECT op.payment_method, SUM(op.amount / op.conversion_rate) as total, COUNT(DISTINCT op.order_reference) as nb
 					FROM `' . _DB_PREFIX_ . 'order_payment` op
 					WHERE op.`date_add` BETWEEN ' . ModuleGraph::getDateBetween() . '
-					AND op.order_reference IN (
-						"' . implode('","', $references) . '"
+                    AND op.order_reference IN (
+						"' . implode('","', array_map('pSQL', $references)) . '"
 					)
 					GROUP BY op.payment_method
 					ORDER BY total DESC';
